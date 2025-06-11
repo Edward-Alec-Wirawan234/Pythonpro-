@@ -1,0 +1,5 @@
+import random
+chars = "+-/*!&$#?=@abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+for i in range (20):
+     karakter = random.choice(chars)
+ print ("karakter")
