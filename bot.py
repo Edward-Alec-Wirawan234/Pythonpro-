@@ -1,0 +1,49 @@
+import discord
+from discord.ext import commands
+from passgen import gen_pass
+
+def __init__(self):
+    intents = discord.Intents.default()
+    intents = discord.Intents.default()
+
+
+bot = commands.Bot(command_prefix='$', intents = discord.Intents)
+
+@bot.event
+async def on_ready():
+    print(f'We have logged in as {bot.user}')
+
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f'Hi! I am a bot {bot.user}!')
+
+@bot.command()
+async def heh(ctx, count_heh = 5):
+    await ctx.send("he" * count_heh)
+
+@bot.command()
+async def generate(ctx, total = 7):
+    await ctx.send(gen_pass(total))
+
+class MyClient(discord.Client):
+    def _init_(self, *args, **kwargs):
+        super()._init_(*args, **kwargs)
+
+        self.role_message_id = 0 # ID of the message that can be reacted to to add/remove a role.
+        self.role_message_id = 0  # ID of the message that can be reacted to to add/remove a role.
+        self.emoji_to_role = {
+            discord.PartialEmoji(name='red'): 0, # ID of the role associated with unicode emoji 'red'.
+            discord.PartialEmoji(name='yellow'): 0, # ID of the role associated with unicode emoji 'yellow'.
+            discord.PartialEmoji(name='green', id=0): 0, # ID of the role associated with a partial emoji's ID.
+            discord.PartialEmoji(name='orange'): 0,  # ID of the role associated with unicode emoji 'orange'.
+            discord.PartialEmoji(name='blue'): 0,  # ID of the role associated with unicode emoji 'blue'.
+            discord.PartialEmoji(name='green', id=0): 0,  # ID of the role associated with a partial emoji's ID.
+        }
+
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+         
+            # If we want to do something in case of errors we'd do it here.pass
+
+
+         bot.run ("Hecker")
