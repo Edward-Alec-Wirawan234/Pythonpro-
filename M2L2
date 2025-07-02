@@ -1,0 +1,98 @@
+import discord
+import os
+
+
+TOKEN = os.getenv('DISCORD_BOT_TOKEN') # For testing, you can directly use: TOKEN = 'YOUR_ACTUAL_TOKEN_HERE'
+
+# Define the intents your bot needs. MESSAGE CONTENT INTENT is crucial for reading user messages.
+intents = discord.Intents.default()
+intents.message_content = True
+
+# Create a Bot instance with the defined intents
+bot = discord.Client(intents=intents)
+
+
+trash_categories = {
+    "plastic bottle": "♻️ Recyclable (Blue Bin) - Make sure it's clean and dry!",
+    "glass bottle": "♻️ Recyclable (Green Bin) - Rinse it out!",
+    "aluminum can": "♻️ Recyclable (Blue Bin)",
+    "paper": "♻️ Recyclable (Yellow Bin) - Dry paper only!",
+    "cardboard": "♻️ Recyclable (Yellow Bin) - Flatten it first!",
+    "food scraps": "🌿 Compost (Green Bin) - Check local composting rules.",
+    "apple core": "🌿 Compost (Green Bin)",
+    "banana peel": "🌿 Compost (Green Bin)",
+    "dirty tissue": "🗑️ General Waste (Black Bin) - Tissues usually aren't recyclable due to contamination.",
+    "plastic bag": "⚠️ Check Local Rules (Often General Waste or Special Drop-off) - Plastic bags can jam recycling machinery.",
+    "styrofoam": "🗑️ General Waste (Black Bin) - Not typically recyclable.",
+    "batteries": "🔋 Hazardous Waste (Special Drop-off) - Never put in regular trash!",
+    "electronics": "🔌 E-Waste (Special Drop-off/Recycling Center) - Don't throw them out!",
+    "old clothes": "👕 Textile Recycling (Donation/Special Drop-off) - If not reusable, look for textile recycling.",
+    "pizza box": "🗑️ General Waste (Black Bin) - If greasy, it's general waste. Clean parts might be recyclable.",
+    "milk carton": "♻️ Recyclable (Often Blue Bin for Tetra Pak) - Rinse and flatten.",
+    "plastic cutlery": "🗑️ General Waste (Black Bin) - Too small/complex to recycle easily.",
+    "light bulb": "💡 Check Local Rules (Often General Waste or Special Drop-off) - Some types are hazardous.",
+}
+
+# --- Bot Events ---
+
+# Event: When the bot is ready and connected to Discord
+@bot.event
+async def on_ready():
+    """
+    This function runs when the bot successfully connects to Discord.
+    It prints a confirmation message to the console.
+    """
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('------')
+
+# Event: When a message is received in any channel the bot can see
+@bot.event
+async def on_message(message):
+    """
+    This function processes every message the bot receives.
+    It checks for specific commands and responds accordingly.
+    """
+    # Ignore messages sent by the bot itself to prevent infinite loops
+    if message.author == bot.user:
+        return
+
+    # Command: !trash <item>
+    # This command provides information on how to sort a specific item.
+    if message.content.lower().startswith('!trash '):
+        # Extract the item name from the message, convert to lowercase, and remove extra spaces
+        item = message.content[len('!trash '):].strip().lower()
+
+        if item in trash_categories:
+            # If the item is found in our dictionary, send the corresponding trash category
+            response = f"For **{item}**: {trash_categories[item]}"
+        else:
+            # If the item is not found, inform the user and suggest help
+            response = (
+                f"I'm not sure about **{item}**. "
+                "Try another item, or consider adding this to my knowledge base!\n"
+                "You can ask me about things like 'plastic bottle', 'food scraps', or 'paper'."
+            )
+        await message.channel.send(response)
+
+    # Command: !trash help
+    # This command provides instructions on how to use the bot.
+    elif message.content.lower() == '!trash help':
+        # Create a list of a few example items to show the user
+        example_items = ", ".join(sorted(list(trash_categories.keys())[:5]))
+        await message.channel.send(
+            "To use me, type `!trash <item>`. "
+            "For example: `!trash plastic bottle` or `!trash banana peel`.\n"
+            f"I know about items like: {example_items}..." # Show a few examples
+        )
+
+    # Optional: Basic !hello command for initial testing
+    elif message.content.lower() == '!hello':
+        await message.channel.send('Hello there! I am your trash sorting bot.')
+
+# --- Run the Bot ---
+# Check if the token is available and then start the bot.
+if TOKEN:
+    bot.run(TOKEN)
+else:
+    print("Error: Discord bot token not found. Please set the DISCORD_BOT_TOKEN environment variable "
+          "or replace 'os.getenv('DISCORD_BOT_TOKEN')' with your actual token string for testing.")
